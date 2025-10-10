@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The ChitraHarsha Vidya - Interactive AI Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+      // This is a placeholder for your actual Firebase configuration.
+      // For the app to function, you must replace these values with your Firebase project's configuration.
+      const firebaseConfig = {
+        apiKey: "AIzaSyB...YOUR_API_KEY", // Replace with your actual API Key
+        authDomain: "your-project-id.firebaseapp.com",
+        projectId: "your-project-id",
+        storageBucket: "your-project-id.appspot.com",
+        messagingSenderId: "your-sender-id",
+        appId: "1:your-sender-id:web:your-app-id",
+      };
+
+      // --- Initialize Firebase and expose to window ---
+      try {
+        const { initializeApp } = await import(
+          "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"
+        );
+        const {
+          getAuth,
+          createUserWithEmailAndPassword,
+          signInWithEmailAndPassword,
+          signOut,
+          onAuthStateChanged,
+        } = await import(
+          "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"
+        );
+        const { getFirestore, doc, setDoc, getDoc } = await import(
+          "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
+        );
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.firebaseServices = {
+          auth,
+          db,
+          createUserWithEmailAndPassword,
+          signInWithEmailAndPassword,
+          signOut,
+          onAuthStateChanged,
+          doc,
+          setDoc,
+          getDoc,
+        };
+      } catch (error) {
+        console.error(
+          "Firebase initialization failed. Please check your configuration.",
+          error
+        );
+        window.firebaseServices = null;
+      }
+    </script>
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f0f2f5;
+      }
+      .hero-bg {
+        background: linear-gradient(270deg, #6a11cb, #2575fc, #f97316);
+        background-size: 600% 600%;
+        animation: gradient-animation 16s ease infinite;
+      }
+      @keyframes gradient-animation {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      .course-card-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      .faq-item {
+        cursor: pointer;
+      }
+      .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .legal-content h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: #1f2937;
+      }
+      .legal-content p,
+      .legal-content ul {
+        margin-bottom: 1.5rem;
+        line-height: 1.75;
+      }
+      .legal-content ul {
+        list-style-position: inside;
+        list-style-type: disc;
+        padding-left: 1rem;
+      }
+      .interactive-lecture-bg {
+        background-color: #111827;
+      }
+      .year-btn.active {
+        background-color: #2563eb;
+        color: white;
+      }
+    </style>
+  </head>
+  <body class="text-gray-800">
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+      <nav
+        class="container mx-auto px-6 py-4 flex justify-between items-center"
+      >
+        <a href="#" class="text-2xl font-bold text-gray-800"
+          >The ChitraHarsha Vidya</a
+        >
+        <div class="hidden md:flex items-center space-x-6">
+          <a href="#home" class="text-gray-600 hover:text-blue-600">Home</a>
+          <a href="#courses" class="text-gray-600 hover:text-blue-600"
+            >Courses</a
+          >
+          <a href="#past-papers" class="text-gray-600 hover:text-blue-600"
+            >Past Papers</a
+          >
+          <a href="#security" class="text-gray-600 hover:text-blue-600"
+            >Security</a
+          >
+          <button
+            id="get-started-btn"
+            class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors"
+          >
+            Get Started
+          </button>
+        </div>
+        <div class="md:hidden">
+          <button
+            id="mobile-menu-button"
+            class="text-gray-600 focus:outline-none"
+          >
+            <i class="fas fa-bars fa-lg"></i>
+          </button>
+        </div>
+      </nav>
+      <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+        <!-- Mobile links populated by JS -->
+      </div>
+    </header>
+
+    <main>
+      <!-- Hero Section -->
+      <section id="home" class="hero-bg text-white relative">
+        <!-- Content from previous step -->
+      </section>
+
+      <!-- Courses Section -->
+      <section id="courses" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+          <h2 class="text-4xl font-bold text-center mb-12">
+            Our Core Programs
+          </h2>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Course Cards -->
+            <div
+              class="bg-white rounded-2xl shadow-lg overflow-hidden course-card-hover transition-transform duration-300"
+            >
+              <img
+                src="https://placehold.co/600x400/7E57C2/FFFFFF?text=Interactive+Lectures"
+                alt="Interactive Lectures"
+                class="w-full h-48 object-cover"
+              />
+              <div class="p-6">
+                <h3 class="text-2xl font-bold mb-2">Interactive Lectures</h3>
+                <p class="text-gray-600 mb-4">
+                  Engage in live polls, Q&A sessions, and virtual labs that make
+                  learning dynamic and effective.
+                </p>
+                <button
+                  onclick="window.app.showInteractiveLecture()"
+                  class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-700"
+                >
+                  See Demo
+                </button>
+              </div>
+            </div>
+            <div
+              class="bg-white rounded-2xl shadow-lg overflow-hidden course-card-hover transition-transform duration-300"
+            >
+              <img
+                src="https://placehold.co/600x400/5C6BC0/FFFFFF?text=AI+Analytics"
+                alt="AI Analytics"
+                class="w-full h-48 object-cover"
+              />
+              <div class="p-6">
+                <h3 class="text-2xl font-bold mb-2">AI-Powered Analytics</h3>
+                <p class="text-gray-600 mb-4">
+                  Receive personalized weekly reports identifying strengths and
+                  areas for improvement.
+                </p>
+                <button
+                  onclick="window.app.showDashboard('student')"
+                  class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-700"
+                >
+                  View Dashboard
+                </button>
+              </div>
+            </div>
+            <div
+              class="bg-white rounded-2xl shadow-lg overflow-hidden course-card-hover transition-transform duration-300"
+            >
+              <img
+                src="https://placehold.co/600x400/42A5F5/FFFFFF?text=Job+Training"
+                alt="Job Training"
+                class="w-full h-48 object-cover"
+              />
+              <div class="p-6">
+                <h3 class="text-2xl font-bold mb-2">Free Job Training</h3>
+                <p class="text-gray-600 mb-4">
+                  Gain practical skills in web development, data science, and
+                  digital marketing.
+                </p>
+                <button
+                  onclick="window.app.showLogin()"
+                  class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-700"
+                >
+                  Enroll Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Past Papers Archive Section -->
+      <section id="past-papers" class="py-20">
+        <div class="container mx-auto px-6">
+          <h2 class="text-4xl font-bold text-center mb-4">
+            Past Papers Archive
+          </h2>
+          <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
+            Access the last 10 years of board exam papers. View questions for
+            free, and unlock detailed solutions with any premium plan.
+          </p>
+          <div class="bg-white p-8 rounded-2xl shadow-lg max-w-5xl mx-auto">
+            <div
+              class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4"
+            >
+              <div class="flex items-center gap-4">
+                <label for="paper-class" class="font-semibold">Class:</label>
+                <select id="paper-class" class="border rounded-lg p-2 bg-white">
+                  <option>Class 12th</option>
+                  <option>Class 10th</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-4">
+                <label for="paper-subject" class="font-semibold"
+                  >Subject:</label
+                >
+                <select
+                  id="paper-subject"
+                  class="border rounded-lg p-2 bg-white"
+                >
+                  <option>Physics</option>
+                  <option>Maths</option>
+                </select>
+              </div>
+            </div>
+            <div
+              id="year-selector"
+              class="flex flex-wrap justify-center gap-2 mb-8"
+            >
+              <!-- Year buttons will be populated by JS -->
+            </div>
+            <div id="paper-display-area" class="border-t pt-6">
+              <h3 id="paper-title" class="text-2xl font-bold mb-4"></h3>
+              <div id="paper-questions" class="space-y-4 text-gray-700">
+                <!-- Questions will be populated by JS -->
+              </div>
+              <div id="paper-solutions" class="mt-6">
+                <button
+                  onclick="window.app.unlockSolutions()"
+                  class="w-full bg-green-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-green-700"
+                >
+                  <i class="fas fa-lock"></i> Unlock Solutions
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Security Section -->
+      <section id="security" class="py-20 bg-gray-800 text-white">
+        <!-- Content from previous step -->
+      </section>
+
+      <!-- FAQs Section -->
+      <section id="faq" class="py-20 bg-white">
+        <!-- Content from previous step -->
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+      <!-- Content from previous step -->
+    </footer>
+
+    <!-- Universal Modal -->
+    <div
+      id="auth-modal"
+      class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden p-4"
+    >
+      <div
+        id="modal-content-area"
+        class="bg-white rounded-2xl shadow-xl w-full max-w-md modal-content"
+      >
+        <div class="p-6 sm:p-8 relative">
+          <button
+            onclick="window.app.closeModal()"
+            class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl z-10"
+          >
+            &times;
+          </button>
+          <h2
+            id="modal-title"
+            class="text-2xl sm:text-3xl font-bold mb-6 text-center"
+          >
+            Login
+          </h2>
+          <div id="modal-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chatbot Widget -->
+    <div id="chatbot-widget" class="fixed bottom-5 right-5 z-40">
+      <button
+        onclick="window.app.showChatbot()"
+        class="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:bg-blue-700 transition-transform hover:scale-110"
+      >
+        <i class="fas fa-robot fa-2x"></i>
+      </button>
+    </div>
+
+    <script type="module">
+      document.addEventListener("DOMContentLoaded", () => {
+        if (!window.firebaseServices) {
+          console.error(
+            "Firebase services not available. App functionality will be limited."
+          );
+        }
+
+        const App = {
+          // ... (Core properties from previous step: DOM elements, State, Data)
+
+          init() {
+            this.renderFaqs();
+            this.renderPastPapers();
+            this.setupEventListeners();
+            if (window.firebaseServices) {
+              window.firebaseServices.onAuthStateChanged(
+                window.firebaseServices.auth,
+                (user) => this.handleAuthStateChange(user)
+              );
+            }
+          },
+
+          // ... (Core methods from previous step: auth state change, event listeners, faqs, modal logic)
+
+          // --- NEW & UPDATED METHODS ---
+
+          renderPastPapers() {
+            const yearSelector = document.getElementById("year-selector");
+            const currentYear = new Date().getFullYear();
+            let yearsHTML = "";
+            for (let i = 0; i < 10; i++) {
+              const year = currentYear - 1 - i;
+              yearsHTML += `<button class="year-btn px-4 py-2 border rounded-lg hover:bg-blue-100 ${
+                i === 0 ? "active" : ""
+              }" data-year="${year}">${year}</button>`;
+            }
+            yearSelector.innerHTML = yearsHTML;
+
+            yearSelector.querySelectorAll(".year-btn").forEach((btn) => {
+              btn.addEventListener("click", () => {
+                yearSelector
+                  .querySelector(".active")
+                  ?.classList.remove("active");
+                btn.classList.add("active");
+                this.loadPaperContent();
+              });
+            });
+
+            document
+              .getElementById("paper-class")
+              .addEventListener("change", () => this.loadPaperContent());
+            document
+              .getElementById("paper-subject")
+              .addEventListener("change", () => this.loadPaperContent());
+
+            this.loadPaperContent(); // Initial load
+          },
+
+          loadPaperContent() {
+            const selectedYear = document.querySelector(
+              "#year-selector .active"
+            ).dataset.year;
+            const selectedClass = document.getElementById("paper-class").value;
+            const selectedSubject =
+              document.getElementById("paper-subject").value;
+
+            document.getElementById(
+              "paper-title"
+            ).textContent = `${selectedClass} ${selectedSubject} Board Paper - ${selectedYear}`;
+
+            // Dummy content for questions
+            const questionsContainer =
+              document.getElementById("paper-questions");
+            questionsContainer.innerHTML = `
+                        <p><strong>Q1:</strong> A common question related to ${selectedSubject} from ${selectedYear}.</p>
+                        <p><strong>Q2:</strong> Another typical problem that tests core concepts of the ${selectedClass} curriculum.</p>
+                        <p><strong>Q3:</strong> A challenging question involving multiple concepts from the syllabus.</p>`;
+          },
+
+          unlockSolutions() {
+            if (this.currentUser) {
+              // In a real app, you'd check their subscription status from Firestore
+              this.openModal(
+                "Premium Feature",
+                `<div class="text-center">
+                                <p class="mb-4">You have unlocked the solutions! In a real application, this would be verified against your premium subscription.</p>
+                                <div class="p-4 bg-green-50 rounded-lg text-left">
+                                    <p><strong>A1:</strong> Detailed step-by-step solution for question 1.</p>
+                                    <p><strong>A2:</strong> Comprehensive answer for question 2 with diagrams.</p>
+                                </div>
+                            </div>`,
+                "md"
+              );
+            } else {
+              this.showLoginPrompt(
+                "Access to detailed solutions is a premium feature. Please log in or sign up to upgrade."
+              );
+            }
+          },
+
+          showLoginPrompt(message) {
+            const content = `
+                        <div class="text-center">
+                            <p class="mb-6 text-gray-600">${message}</p>
+                            <button onclick="window.app.closeModal(); window.app.showLogin();" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700">Login / Sign Up</button>
+                        </div>`;
+            this.openModal("Login Required", content);
+          },
+
+          showInteractiveLecture() {
+            const content = `
+                        <div class="interactive-lecture-bg text-white rounded-lg -m-8 p-8">
+                            <div class="aspect-w-16 aspect-h-9 mb-4">
+                                <div class="bg-black rounded-lg flex items-center justify-center">
+                                    <p class="text-gray-400">[Video player placeholder]</p>
+                                </div>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-4">Lecture: Quantum Physics - Wave-Particle Duality</h3>
+                            <!-- Interactive Elements -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Live Poll -->
+                                <div class="bg-gray-800 p-4 rounded-lg">
+                                    <h4 class="font-semibold mb-3">Live Poll: Is light a wave or a particle?</h4>
+                                    <div class="space-y-2">
+                                        <button class="w-full text-left p-2 bg-gray-700 rounded hover:bg-blue-600">A) Wave</button>
+                                        <button class="w-full text-left p-2 bg-gray-700 rounded hover:bg-blue-600">B) Particle</button>
+                                        <button class="w-full text-left p-2 bg-gray-700 rounded hover:bg-blue-600">C) Both</button>
+                                    </div>
+                                </div>
+                                <!-- Q&A -->
+                                <div class="bg-gray-800 p-4 rounded-lg">
+                                    <h4 class="font-semibold mb-3">Ask a Question</h4>
+                                    <textarea class="w-full bg-gray-700 rounded p-2 text-white" rows="2" placeholder="Type your question here..."></textarea>
+                                    <button class="w-full mt-2 p-2 bg-blue-600 rounded hover:bg-blue-700">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            this.openModal("Interactive Lecture Demo", content, "lg");
+          },
+
+          // ... (Rest of the methods from previous steps: showDashboard, showLegal, showChatbot, auth methods)
+        };
+
+        window.app = App;
+        window.app.init();
+      });
+    </script>
+  </body>
+</html>
